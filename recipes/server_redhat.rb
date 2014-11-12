@@ -79,7 +79,7 @@ if platform_family?("fedora") and node['platform_version'].to_i >= 16
   end
 elsif platform_family?("rhel") and node['platform_version'].to_i >= 7
   execute "/usr/pgsql-#{pg_version}/bin/postgresql#{pg_version.gsub('.', '')}-setup initdb" do
-    not_if { ::FileTest.exist?(File.join(dir, pg_version, 'data')) }
+    not_if { ::FileTest.exist?(File.join(dir, pg_version)) }
   end
 else !platform_family?("suse")
   execute "/sbin/service #{svc_name} initdb #{initdb_locale}" do
