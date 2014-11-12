@@ -71,13 +71,18 @@ unless platform_family?("fedora") and node['platform_version'].to_i >= 16
 
 end
 
+
 if platform_family?("fedora") and node['platform_version'].to_i >= 16
 
   execute "postgresql-setup initdb #{svc_name}" do
     not_if { ::FileTest.exist?(File.join(dir, "PG_VERSION")) }
   end
-
-else !platform_family?("suse") 
+elsif platform_family?("redhat") and node['platform_version'].to_i >= 7
+  execute "/usr/pgsql-9.3/bin/postgresql93-setup initdb" do
+    # /usr/pgsql-9.3/bin/postgresql93-setup initdb
+    not_if { ::FileTest.exist?(File.join(dir, "PG_VERSION")) }
+  end
+else !platform_family?("suse")
 
   execute "/sbin/service #{svc_name} initdb #{initdb_locale}" do
     not_if { ::FileTest.exist?(File.join(dir, "PG_VERSION")) }
