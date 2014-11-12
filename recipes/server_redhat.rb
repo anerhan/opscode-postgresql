@@ -20,6 +20,7 @@ include_recipe "postgresql::client"
 svc_name = node['postgresql']['server']['service_name']
 dir = node['postgresql']['dir']
 initdb_locale = node['postgresql']['initdb_locale']
+pg_version = node['postgresql']['version']
 
 # Create a group and user like the package will.
 # Otherwise the templates fail.
@@ -73,17 +74,14 @@ end
 
 
 if platform_family?("fedora") and node['platform_version'].to_i >= 16
-
   execute "postgresql-setup initdb #{svc_name}" do
     not_if { ::FileTest.exist?(File.join(dir, "PG_VERSION")) }
   end
 elsif platform_family?("rhel") and node['platform_version'].to_i >= 7
-  execute "/usr/pgsql-9.3/bin/postgresql93-setup initdb" do
-    # /usr/pgsql-9.3/bin/postgresql93-setup initdb
+  execute "/usr/pgsql-#{pg_version}/bin/postgresql#{pg_version.gsub('.', '')}-setup initdb" do
     not_if { ::FileTest.exist?(File.join(dir, "PG_VERSION")) }
   end
 else !platform_family?("suse")
-
   execute "/sbin/service #{svc_name} initdb #{initdb_locale}" do
     not_if { ::FileTest.exist?(File.join(dir, "PG_VERSION")) }
   end
